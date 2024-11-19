@@ -27,7 +27,7 @@ ADDR_DSPL:
 ADDR_KBRD:
     .word 0xffff0000
 
-##############################################################################
+####################################################
 # Mutable Data
 ##############################################################################
 Capsule_now:      .word 432          # Current coordinate of capsule.
@@ -119,8 +119,10 @@ loop7:
 
 capsule_init:		    # init capsule
     addi $t4, $t0, 432      # new capsule position(top part)
+    addi $s1, $zero, 0      # set s1 to 0
     li $t2, 0               # reset i
     li $t3, 8               # reset constraints
+    sw $zero, 0x10000300      # Set the position state of box to 0 (box1 above box2)
 draw_init_cap:
     beq $t2, $t3, next_capsule      # 2 time loops
     sw $t4, 0x10000100($t2)          # store coordinate of the unit box
@@ -154,7 +156,7 @@ draw_blue:
 next_capsule:
     addi $t5, $t0, 880      # next capsule position(top part)
     li $t2, 0               # reset i
-    li $t3, 2               # reset constraints
+    li $t3, 8               # reset constraints
 draw_next_cap:
     beq $t2, $t3, generate_virus      # 2 time loops
     li $v0, 42
@@ -167,18 +169,22 @@ draw_next_cap:
 green:
     sw $t8, 0($t5)          # draw a green pixel
     addi $t5, $t5, 128      # t5 += 128, load the next index
-    addi $t2, $t2, 1        # i++
+    sw $t8, 0x10000400($t2) # store next color of the unit box
+    addi $t2, $t2, 4        # i++
     j draw_next_cap
 yellow:
     sw $t7, 0($t5)          # draw a yellow pixel
     addi $t5, $t5, 128      # t5 += 128, load the next index
-    addi $t2, $t2, 1        # i++
+    sw $t7, 0x10000400($t2) # store next color of the unit box
+    addi $t2, $t2, 4        # i++
     j draw_next_cap
 blue:
     sw $t9, 0($t5)          # draw a blue pixel
     addi $t5, $t5, 128      # t5 += 128, load the next index
-    addi $t2, $t2, 1        # i++
+    sw $t9, 0x10000400($t2) # store next color of the unit box
+    addi $t2, $t2, 4        # i++
     j draw_next_cap
+
 generate_virus:
     li $t2, 0               # reset i
     li $v0, 42
@@ -228,13 +234,81 @@ blue1:
     addi $t2, $t2, 1        # i++
     j draw_virus
 
+
+# does not loop during initialization
+capsule_new:		    # init capsule
+    addi $t4, $t0, 432      # new capsule position(top part)
+    addi $s1, $zero, 0      # set s1 to 0
+    li $t2, 0               # reset i
+    li $t3, 8               # reset constraints
+    sw $zero, 0x10000300      # Set the position state of box to 0 (box1 above box2)
+draw_new_cap:
+    beq $t2, $t3, next_capsule_new      # 2 time loops
+    sw $t4, 0x10000100($t2)          # store coordinate of the unit box
+    lw $a0, 0x10000400($t2) # load color of new box
+    beq $a0, 0x00ff00, draw_green_new
+    beq $a0, 0xffff00, draw_yellow_new
+    beq $a0, 0x0000ff, draw_blue_new   # jump to draw based on randomized int
+
+draw_yellow_new:
+    sw $t7, 0($t4)          # draw a yellow pixel
+    addi $t4, $t4, 128      # t4 += 128, load the next index
+    sw $t7, 0x10000200($t2)          # store color of the unit box
+    addi $t2, $t2, 4        # i+=4
+    j draw_new_cap
+draw_green_new:
+    sw $t8, 0($t4)          # draw a green pixel
+    addi $t4, $t4, 128      # t4 += 128, load the next index
+    sw $t8, 0x10000200($t2)          # store color of the unit box
+    addi $t2, $t2, 4        # i+=4
+    j draw_new_cap
+draw_blue_new:
+    sw $t9, 0($t4)          # draw a blue pixel
+    addi $t4, $t4, 128      # t4 += 128, load the next index
+    sw $t9, 0x10000200($t2)         # store color of the unit box
+    addi $t2, $t2, 4        # i+=4
+    j draw_new_cap
+
+next_capsule_new:
+    addi $t5, $t0, 880      # next capsule position(top part)
+    li $t2, 0               # reset i
+    li $t3, 8               # reset constraints
+draw_next_new_cap:
+    beq $t2, $t3, game_loop      # 2 time loops
+    li $v0, 42
+    li $a0, 0
+    li $a1, 3               # generate a random integer between 0 and 2(inclusive)
+    syscall                 # generate a random int
+    beq $a0, 0, green_new
+    beq $a0, 1, yellow_new
+    beq $a0, 2, blue_new        # jump to draw based on randomized int
+green_new:
+    sw $t8, 0($t5)          # draw a green pixel
+    addi $t5, $t5, 128      # t5 += 128, load the next index
+    sw $t8, 0x10000400($t2) # store next color of the unit box
+    addi $t2, $t2, 4        # i++
+    j draw_next_new_cap
+yellow_new:
+    sw $t7, 0($t5)          # draw a yellow pixel
+    addi $t5, $t5, 128      # t5 += 128, load the next index
+    sw $t7, 0x10000400($t2) # store next color of the unit box
+    addi $t2, $t2, 4        # i++
+    j draw_next_new_cap
+blue_new:
+    sw $t9, 0($t5)          # draw a blue pixel
+    addi $t5, $t5, 128      # t5 += 128, load the next index
+    sw $t9, 0x10000400($t2) # store next color of the unit box
+    addi $t2, $t2, 4        # i++
+    j draw_next_new_cap
+
+
 game_loop:
 	li 		$v0, 32
 	li 		$a0, 1
 	syscall
 
-    lw $t8, 0($s0)                  # Load first word from keyboard
-    beq $t8, 1, keyboard_input      # If first word 1, key is pressed
+    lw $t5, 0($s0)                  # Load first word from keyboard
+    beq $t5, 1, keyboard_input      # If first word 1, key is pressed
     b game_loop
 
 keyboard_input:                     # A key is pressed
@@ -256,6 +330,8 @@ respond_to_W:
     lw $t3, 0x10000200 # t3 = color of the first box
     lw $t2, 0x10000100 # t2 = coordinate of the first box
 
+    jal check_w          # check collisions
+
     add $a0, $zero, $t4
     jal erase
 
@@ -275,21 +351,29 @@ respond_to_W:
 rotate_to_bottom:
     addi $t4, $t2, 128       # 将第二块移动到底部
     sw $t4, 0x10000104 # save new coordinate of the first box
+    addi $s1, $zero, 0
+    sw $s1, 0x10000300      # Set the position state of box to 0 (box1 above box2)
     j draw_rotated
 
 rotate_to_left:
     addi $t4, $t2, -4         # 将第二块移动到左侧
     sw $t4, 0x10000104 # save new coordinate of the first box
+    addi $s1, $zero, 1
+    sw $s1, 0x10000300      # Set the position state of box to 1 (box1 to the left box2)
     j draw_rotated
 
 rotate_to_top:
     addi $t4, $t2, -128       # 将第二块移动到顶部
     sw $t4, 0x10000104 # save new coordinate of the first box
+    addi $s1, $zero, 2
+    sw $s1, 0x10000300      # Set the position state of box to 2 (box1 below box2)
     j draw_rotated
 
 rotate_to_right:
     addi $t4, $t2, 4         # 将第二块移动到右侧
     sw $t4, 0x10000104 # save new coordinate of the first box
+    addi $s1, $zero, 3
+    sw $s1, 0x10000300      # Set the position state of box to 3 (box1 to the right box2)
     j draw_rotated
 
 draw_rotated:
@@ -312,6 +396,8 @@ respond_to_A:
     lw $t4, 0x10000104   # $t4 = coordinate of the second box
     lw $t3, 0x10000200   # $t3 = color of the first box
     lw $t2, 0x10000100   # $t2 = coordinate of the first box
+
+    jal check_a          # check collisions
 
     add $a0, $zero, $t4
     jal erase
@@ -336,6 +422,8 @@ respond_to_S:
     lw $t4, 0x10000104 # t4 = coordinate of the second box
     lw $t3, 0x10000200 # t3 = color of the first box
     lw $t2, 0x10000100 # t2 = coordinate of the first box
+
+    jal check_s          # check collisions
 
     add $a0, $zero, $t4
     jal erase
@@ -363,6 +451,9 @@ respond_to_D:
     lw $t4, 0x10000104   # $t4 = coordinate of the second box
     lw $t3, 0x10000200   # $t3 = color of the first box
     lw $t2, 0x10000100   # $t2 = coordinate of the first box
+
+    jal check_d          # check collisions
+
     add $a0, $zero, $t4
     jal erase
 
@@ -388,6 +479,224 @@ respond_to_D:
 	# 4. Sleep
 
     # 5. Go back to Step 1
+
+check_w:
+    beq $s1, 0, check_w_0
+    beq $s1, 1, check_w_1
+    beq $s1, 2, check_w_2
+    beq $s1, 3, check_w_3
+    jr $ra
+check_w_0:
+    lw $s2, 0x10000100
+    addi $s2, $s2, -4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    jr $ra
+check_w_1:
+    lw $s2, 0x10000100
+    addi $s2, $s2, -128
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    jr $ra
+check_w_2:
+    lw $s2, 0x10000100
+    addi $s2, $s2, 4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    jr $ra
+check_w_3:
+    lw $s2, 0x10000100
+    addi $s2, $s2, 128
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    jr $ra
+
+check_a:
+    beq $s1, 0, check_a_0
+    beq $s1, 1, check_a_1
+    beq $s1, 2, check_a_2
+    beq $s1, 3, check_a_3
+    jr $ra
+check_a_0:
+    lw $s2, 0x10000100
+    addi $s2, $s2, -4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    lw $s2, 0x10000104
+    addi $s2, $s2, -4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    jr $ra
+check_a_1:
+    lw $s2, 0x10000104
+    addi $s2, $s2, -4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    jr $ra
+check_a_2:
+    lw $s2, 0x10000100
+    addi $s2, $s2, -4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    lw $s2, 0x10000104
+    addi $s2, $s2, -4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    jr $ra
+check_a_3:
+    lw $s2, 0x10000100
+    addi $s2, $s2, -4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    jr $ra
+
+check_s:
+    beq $s1, 0, check_s_0
+    beq $s1, 1, check_s_1
+    beq $s1, 2, check_s_2
+    beq $s1, 3, check_s_3
+    jr $ra
+check_s_0:
+    lw $s2, 0x10000104
+    addi $s2, $s2, 128
+    lw $s3, 0($s2)
+    beq $s3, $t1, collisions
+    beq $s3, $t7, collisions
+    beq $s3, $t8, collisions
+    beq $s3, $t9, collisions
+    jr $ra
+check_s_1:
+    lw $s2, 0x10000100
+    addi $s2, $s2, 128
+    lw $s3, 0($s2)
+    beq $s3, $t1, collisions
+    beq $s3, $t7, collisions
+    beq $s3, $t8, collisions
+    beq $s3, $t9, collisions
+    lw $s2, 0x10000104
+    addi $s2, $s2, 128
+    lw $s3, 0($s2)
+    beq $s3, $t1, collisions
+    beq $s3, $t7, collisions
+    beq $s3, $t8, collisions
+    beq $s3, $t9, collisions
+    jr $ra
+check_s_2:
+    lw $s2, 0x10000100
+    addi $s2, $s2, 128
+    lw $s3, 0($s2)
+    beq $s3, $t1, collisions
+    beq $s3, $t7, collisions
+    beq $s3, $t8, collisions
+    beq $s3, $t9, collisions
+    jr $ra
+check_s_3:
+    lw $s2, 0x10000100
+    addi $s2, $s2, 128
+    lw $s3, 0($s2)
+    beq $s3, $t1, collisions
+    beq $s3, $t7, collisions
+    beq $s3, $t8, collisions
+    beq $s3, $t9, collisions
+    lw $s2, 0x10000104
+    addi $s2, $s2, 128
+    lw $s3, 0($s2)
+    beq $s3, $t1, collisions
+    beq $s3, $t7, collisions
+    beq $s3, $t8, collisions
+    beq $s3, $t9, collisions
+    jr $ra
+
+check_d:
+    beq $s1, 0, check_d_0
+    beq $s1, 1, check_d_1
+    beq $s1, 2, check_d_2
+    beq $s1, 3, check_d_3
+    jr $ra
+check_d_0:
+    lw $s2, 0x10000100
+    addi $s2, $s2, 4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    lw $s2, 0x10000104
+    addi $s2, $s2, 4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    jr $ra
+check_d_1:
+    lw $s2, 0x10000100
+    addi $s2, $s2, 4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    jr $ra
+check_d_2:
+    lw $s2, 0x10000100
+    addi $s2, $s2, 4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    lw $s2, 0x10000104
+    addi $s2, $s2, 4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    jr $ra
+check_d_3:
+    lw $s2, 0x10000104
+    addi $s2, $s2, 4
+    lw $s3, 0($s2)
+    beq $s3, $t1, game_loop
+    beq $s3, $t7, game_loop
+    beq $s3, $t8, game_loop
+    beq $s3, $t9, game_loop
+    jr $ra
+
+collisions:
+    j capsule_new
+
 erase:
     li $t3, 0x000000
     sw $t3, 0($a0)
