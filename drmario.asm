@@ -2,7 +2,7 @@
 # This file contains our implementation of Dr Mario.
 #
 # Student 1: Charles Feng, 1009082680
-# Student 2: Name, Student Number (if applicable)
+# Student 2: Yitao Huang, 1010602885
 #
 # We assert that the code submitted here is entirely our own 
 # creation, and will indicate otherwise when it is not.
@@ -18,6 +18,7 @@
     .data
 ##############################################################################
 # Immutable Data
+
 ##############################################################################
 # The address of the bitmap display. Don't forget to connect it!
 ADDR_DSPL:
@@ -29,14 +30,25 @@ ADDR_KBRD:
 ##############################################################################
 # Mutable Data
 ##############################################################################
-
+Capsule_now:      .word 432          # Current coordinate of capsule.
 ##############################################################################
 # Code
 ##############################################################################
 	.text
 	.globl main
 
-    # Run the game.
+.macro erase (%coordinate)
+    li $t4, 0x000000          # black
+    add $t5, $zero, %coordinate
+    sw $t4, 0($t5)            # $t5 should be the erased coordinate 
+.end_macro
+
+.macro draw_new_box (%coordinate, %color)
+    add $t4, $zero, %color          # black
+    add $t5, $zero, %coordinate
+    sw $t4, 0($t5)            # $t5 should be the erased coordinate 
+.end_macro
+
 main:
     li $t1, 0xA9A9A9        # $t1 = grey
     li $t2, 0               # i for loops
@@ -45,6 +57,8 @@ main:
     li $t9, 0x0000ff        # blue
     
     lw $t0, ADDR_DSPL       # init address
+    lw $s0, ADDR_KBRD       # $s0 = base address for keyboard
+    
     li $t3, 3               # loop constraints
     li $t4, 0               # address to loop with, change every loops
     addi $t4, $t0, 424      # init the begin point
@@ -114,12 +128,15 @@ loop7:
     sub $t4, $t4, $t6       # t4 -= 128, load next value
     addi $t2, $t2, 1        # i++
     j loop7
-capsule_init:
+
+capsule_init:		    # init capsule
     addi $t4, $t0, 432      # new capsule position(top part)
     li $t2, 0               # reset i
     li $t3, 2               # reset constraints
 draw_init_cap:
     beq $t2, $t3, next_capsule      # 2 time loops
+    addi $sp, $sp, -4 
+    sw $t4, 0($sp)          # store coordinate of the unit box
     li $v0, 42
     li $a0, 0
     li $a1, 3               # generate a random integer between 0 and 2(inclusive)
@@ -127,21 +144,29 @@ draw_init_cap:
     beq $a0, 0, draw_green  
     beq $a0, 1, draw_yellow
     beq $a0, 2, draw_blue   # jump to draw based on randomized int
-draw_green:
-    sw $t8, 0($t4)          # draw a green pixel
-    addi $t4, $t4, 128      # t4 += 128, load the next index
-    addi $t2, $t2, 1        # i++
-    j draw_init_cap
+    
 draw_yellow:
     sw $t7, 0($t4)          # draw a yellow pixel
     addi $t4, $t4, 128      # t4 += 128, load the next index
     addi $t2, $t2, 1        # i++
+    addi $sp, $sp, -4
+    sw $t7, 0($sp)          # store color of the unit box
+    j draw_init_cap
+draw_green:
+    sw $t8, 0($t4)          # draw a green pixel
+    addi $t4, $t4, 128      # t4 += 128, load the next index
+    addi $t2, $t2, 1        # i++
+    addi $sp, $sp, -4
+    sw $t8, 0($sp)          # store color of the unit box
     j draw_init_cap
 draw_blue:
     sw $t9, 0($t4)          # draw a blue pixel
     addi $t4, $t4, 128      # t4 += 128, load the next index
     addi $t2, $t2, 1        # i++
+    addi $sp, $sp, -4
+    sw $t9, 0($sp)          # store color of the unit box
     j draw_init_cap
+    
 next_capsule:
     addi $t5, $t0, 880      # next capsule position(top part)
     li $t2, 0               # reset i
@@ -218,7 +243,122 @@ blue1:
     sw $t9, 0($t4)          # draw a blue pixel
     addi $t2, $t2, 1        # i++
     j draw_virus
+    
 game_loop:
+	li 		$v0, 32
+	li 		$a0, 1
+	syscall
+
+    lw $t8, 0($s0)                  # Load first word from keyboard
+    beq $t8, 1, keyboard_input      # If first word 1, key is pressed
+    b game_loop
+
+keyboard_input:                     # A key is pressed
+    lw $a0, 4($s0)                  # Load second word from keyboard
+    beq $a0, 0x71, respond_to_Q     # Check if the key q was pressed
+    beq $a0, 0x77, respond_to_W     # Check if the key w was pressed
+    beq $a0, 0x61, respond_to_A     # Check if the key a was pressed
+    beq $a0, 0x73, respond_to_S     # Check if the key s was pressed
+    beq $a0, 0x64, respond_to_D     # Check if the key d was pressed
+
+    b game_loop
+
+respond_to_Q:
+	li $v0, 10                      # Quit gracefully
+	syscall
+respond_to_W:
+    lw $t5, 0($sp)   # t5 = color of the second box
+    addi $sp, $sp, 4 
+    lw $t4, 0($sp) # t5 = coordinate of the second box
+    addi $sp, $sp, 4 
+    lw $t3, 0($sp) # t5 = color of the first box
+    addi $sp, $sp, 4
+    lw $t2, 0($sp) # t2 = coordinate of the first box
+    addi $sp, $sp, 4
+    erase $t4               # Move the capsule one unit to the left
+    erase $t2
+    addi $t4, $t4, -4
+    addi $t2, $t2, -4
+    # 判断第二块相对于第一块的位置并进行调整
+    sub $t6, $t4, $t2        # 计算位置差：$t6 = $t4 - $t2
+
+    # 顺时针旋转位置
+    beq $t6, 4, rotate_to_bottom   # 如果 $t6 == 4，当前在右侧
+    beq $t6, 128, rotate_to_left   # 如果 $t6 == 128，当前在底部
+    beq $t6, -4, rotate_to_top     # 如果 $t6 == -4，当前在左侧
+    beq $t6, -128, rotate_to_right # 如果 $t6 == -128，当前在顶部
+
+rotate_to_bottom:
+    addi $t4, $t2, 128       # 将第二块移动到底部
+    j draw_rotated
+
+rotate_to_left:
+    subi $t4, $t2, 4         # 将第二块移动到左侧
+    j draw_rotated
+
+rotate_to_top:
+    subi $t4, $t2, 128       # 将第二块移动到顶部
+    j draw_rotated
+
+rotate_to_right:
+    addi $t4, $t2, 4         # 将第二块移动到右侧
+
+draw_rotated:
+    # 重新绘制旋转后的胶囊
+    draw_new_box $t4, $t5     # 绘制第二块的新位置
+    draw_new_box $t2, $t3     # 绘制第一块（位置未变）
+    j game_loop
+    
+respond_to_A:
+    lw $t5, 0($sp)   # t5 = color of the second box
+    addi $sp, $sp, 4 
+    lw $t4, 0($sp) # t5 = coordinate of the second box
+    addi $sp, $sp, 4 
+    lw $t3, 0($sp) # t5 = color of the first box
+    addi $sp, $sp, 4
+    lw $t2, 0($sp) # t2 = coordinate of the first box
+    addi $sp, $sp, 4
+    erase $t4               # Move the capsule one unit to the left
+    erase $t2
+    addi $t4, $t4, -4
+    addi $t2, $t2, -4
+    draw_new_box $t4, $t5
+    draw_new_box $t2, $t3
+    j game_loop
+    
+respond_to_S:
+    lw $t5, 0($sp)   # t5 = color of the second box
+    addi $sp, $sp, 4 
+    lw $t4, 0($sp) # t5 = coordinate of the second box
+    addi $sp, $sp, 4 
+    lw $t3, 0($sp) # t5 = color of the first box
+    addi $sp, $sp, 4
+    lw $t2, 0($sp) # t2 = coordinate of the first box
+    addi $sp, $sp, 4
+    erase $t4               # Move the capsule down one unit
+    erase $t2
+    addi $t4, $t4, 128
+    addi $t2, $t2, 128
+    draw_new_box $t4, $t5
+    draw_new_box $t2, $t3
+    j game_loop
+    
+respond_to_D:
+    lw $t5, 0($sp)   # t5 = color of the second box
+    addi $sp, $sp, 4 
+    lw $t4, 0($sp) # t5 = coordinate of the second box
+    addi $sp, $sp, 4 
+    lw $t3, 0($sp) # t5 = color of the first box
+    addi $sp, $sp, 4
+    lw $t2, 0($sp) # t2 = coordinate of the first box
+    addi $sp, $sp, 4
+    erase $t4               # Move the capsule one unit to the right
+    erase $t2
+    addi $t4, $t4, 4
+    addi $t2, $t2, 4
+    draw_new_box $t4, $t5
+    draw_new_box $t2, $t3
+    j game_loop
     # 1a. Check if key has been pressed
     # 1b. Check which key has been pressed
     # 2a. Check for collisions
@@ -227,7 +367,6 @@ game_loop:
 	# 4. Sleep
 
     # 5. Go back to Step 1
-    j game_loop
     
 exit:
     li $v0, 10              # terminate the program gracefully
