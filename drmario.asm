@@ -38,18 +38,32 @@ Capsule_now:      .word 432          # Current coordinate of capsule.
 	.globl main
 
 main:
-    li $t1, 0xA9A9A9        # $t1 = grey
     li $t2, 0               # i for loops
     li $t7, 0xffff00        # yellow
     li $t8, 0x00ff00        # green
     li $t9, 0x0000ff        # blue
-
+    
     lw $t0, ADDR_DSPL       # init address
     lw $s0, ADDR_KBRD       # $s0 = base address for keyboard
 
     li $t3, 3               # loop constraints
     li $t4, 0               # address to loop with, change every loops
     addi $t4, $t0, 424      # init the begin point
+    li $t1, 0x10000000
+    sw $zero, 0($t1)
+    li $t1, 0x10000004
+    sw $zero, 0($t1)
+    li $t1, 0x10000008
+    sw $zero, 0($t1)
+    li $t1, 0x1000000c
+    sw $zero, 0($t1)
+    li $t1, 0x10000010
+    sw $zero, 0($t1)
+    li $t1, 0x10000014
+    sw $zero, 0($t1)
+    li $t1, 0xA9A9A9        # $t1 = grey
+    
+    
 
 # all loop and pre_loop are using to draw medicine bottle
 loop1:
@@ -187,6 +201,7 @@ blue:
 
 generate_virus:
     li $t2, 0               # reset i
+    li $s5, 0x10000000
     li $v0, 42
     li $a0, 0
     li $a1, 7               # generate a random integer between 0 and 6(inclusive)
@@ -223,14 +238,20 @@ draw_virus:
     beq $a0, 2, blue1       # jump to draw based on color
 green1:
     sw $t8, 0($t4)          # draw a green pixel
+    sw $t4, 0($s5)
+    addi $s5, $s5, 4
     addi $t2, $t2, 1        # i++
     j draw_virus
 yellow1:
     sw $t7, 0($t4)          # draw a yellow pixel
+    sw $t4, 0($s5)
+    addi $s5, $s5, 4
     addi $t2, $t2, 1        # i++
     j draw_virus
 blue1:
     sw $t9, 0($t4)          # draw a blue pixel
+    sw $t4, 0($s5)
+    addi $s5, $s5, 4
     addi $t2, $t2, 1        # i++
     j draw_virus
 
@@ -695,12 +716,147 @@ check_d_3:
     jr $ra
 
 collisions:
-    j capsule_new
+    addi $t4, $t0, 816
+    lw $t5, 0($t4)
+    bne $t5, $zero, exit        # check if the top of bottle is empty, if not then exit
+    addi $t4, $t0, 0
+    lw $t2, ADDR_DSPL           # i = ADDR_DSPL
+    addi $s4, $t2, 4096         # set loop constraints
+iter_through:
+    beq $t2, $s4, capsule_new   # when done the loop through all element in bitmap, go generate next capsule
+    lw $t4, 0($t2)
+    bne $t4, 0, if_grey
+    addi $t2, $t2, 4
+    j iter_through
+if_grey:
+    bne $t4, 0xa9a9a9, check_vertical
+    addi $t2, $t2, 4
+    j iter_through
+check_vertical:
+    lw $t4, 0($t2)
+    lw $t5, 128($t2)
+    lw $t6, 256($t2)
+    lw $s7, 384($t2)
+    bne $t4, $t5, check_horizontal
+    bne $t4, $t6, check_horizontal
+    bne $t4, $s7, check_horizontal
+    addi $a0, $t2, 0
+    jal erase
+    addi $a0, $t2, 128
+    jal erase
+    addi $a0, $t2, 256
+    jal erase
+    addi $a0, $t2, 384
+    jal erase
+    addi $a0, $t2, 388
+    jal fall_down
+    addi $a0, $t2, 260
+    jal fall_down
+    addi $a0, $t2, 132
+    jal fall_down
+    addi $a0, $t2, 4
+    jal fall_down
+    addi $a0, $t2, -128
+    jal fall_down
+    addi $a0, $t2, 380
+    jal fall_down
+    addi $a0, $t2, 252
+    jal fall_down
+    addi $a0, $t2, 124
+    jal fall_down
+    addi $a0, $t2, -4
+    jal fall_down
+    addi $t2, $t2, 4
+    j collisions
+check_horizontal:
+    lw $t4, 0($t2)
+    lw $t5, 4($t2)
+    lw $t6, 8($t2)
+    lw $s7, 12($t2)
+    bne $t4, $t5, update
+    bne $t4, $t6, update
+    bne $t4, $s7, update
+    addi $a0, $t2, 0
+    jal erase
+    addi $a0, $t2, 4
+    jal erase
+    addi $a0, $t2, 8
+    jal erase
+    addi $a0, $t2, 12
+    jal erase
+    addi $a0, $t2, -4
+    jal fall_down
+    addi $a0, $t2, -128
+    jal fall_down
+    addi $a0, $t2, -124
+    jal fall_down
+    addi $a0, $t2, -120
+    jal fall_down
+    addi $a0, $t2, -116
+    jal fall_down
+    addi $a0, $t2, 16
+    jal fall_down
+    addi $t2, $t2, 4
+    j collisions
+update:
+    addi $t2, $t2, 4
+    j iter_through
+    
+fall_down:
+    add $s6, $ra, $zero
+    add $t4, $a0, $zero
+    lw $t5, 0($t4)
+    beq $t5, 0, jump_back
+    beq $t5, 0xa9a9a9, jump_back
+fall_loop:
+    addi $t5, $t4, 128
+    lw $t5, 0($t5)
+    bne $t5, 0, jump_back       # check next empty
+    lw $t6, 0x10000000
+    beq $t6, 0x0, check1
+    beq $t4, $t6, jump_back
+    j check1
+check1:
+    lw $t6, 0x10000004
+    beq $t6, 0x0, check2
+    beq $t4, $t6, jump_back
+    j check2
+check2:
+    lw $t6, 0x10000008
+    beq $t6, 0x0, check3
+    beq $t4, $t6, jump_back
+    j check3
+check3:
+    lw $t6, 0x1000000c
+    beq $t6, 0x0, check4
+    beq $t4, $t6, jump_back
+    j check4
+check4:
+    lw $t6, 0x10000010
+    beq $t6, 0x0, check5
+    beq $t4, $t6, jump_back
+    j check5
+check5:
+    lw $t6, 0x10000014
+    beq $t6, 0x0, not_virus
+    beq $t4, $t6, jump_back     # check if virus
+not_virus:
+    lw $t5, 0($t4)
+    addi $t6, $t4, 128
+    addi $a0, $t4, 0
+    jal erase
+    addi $a0, $t6, 0
+    addi $a1, $t5, 0
+    jal draw_new_box
+    addi $t4, $t4, 128
+    j fall_loop
+jump_back:
+    jr $s6
 
 erase:
     li $t3, 0x000000
     sw $t3, 0($a0)
-    lw $t3 0x10000200
+    lw $t3, 0x10000200
     jr $ra
 
 draw_new_box:
