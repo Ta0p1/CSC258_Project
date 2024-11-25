@@ -455,6 +455,7 @@ loop_body:
 
 keyboard_input:                     # A key is pressed
     lw $a0, 4($s0)                  # Load second word from keyboard
+    beq $a0, 0x70, respond_to_P
     beq $a0, 0x71, respond_to_Q     # Check if the key q was pressed
     beq $a0, 0x77, respond_to_W     # Check if the key w was pressed
     beq $a0, 0x61, respond_to_A     # Check if the key a was pressed
@@ -462,6 +463,40 @@ keyboard_input:                     # A key is pressed
     beq $a0, 0x64, respond_to_D     # Check if the key d was pressed
 
     b game_loop
+    
+respond_to_P:
+    li $t2, 0
+    li $t3, 32
+    li $t4, 0xff0000
+    lw $t5, ADDR_DSPL
+draw_pause:
+    beq $t2, $t3, waiting_for_signal
+    sw $t4, 0($t5)
+    addi $t5, $t5, 4
+    addi $t2, $t2, 1
+    j draw_pause
+waiting_for_signal:
+    li $v0, 32
+	li $a0, 1
+	syscall                         # Sleep for 1 time unit
+	lw $t4, 0($s0)
+    beq $t4, 1, resume
+    b waiting_for_signal
+resume:
+    lw $a0, 4($s0)
+    bne $a0, 0x70, waiting_for_signal
+erase_pause:
+    li $t2, 0
+    li $t3, 32
+    lw $t5, ADDR_DSPL
+erase_pause_loop:
+    beq $t2, $t3, back_and_resume
+    sw $zero, 0($t5)
+    addi $t5, $t5, 4
+    addi $t2, $t2, 1
+    j erase_pause_loop
+back_and_resume:
+    j game_loop
 
 respond_to_Q:
 	li $v0, 10                      # Quit gracefully
@@ -531,6 +566,12 @@ draw_rotated:
     # Save new coordinates
     sw $t2, 0x10000100              # Save coordinate of the first box
     sw $t4, 0x10000104              # Save coordinate of the second box
+    li $v0, 31
+    li $a0, 66
+    li $a1, 100
+    li $a2, 2
+    li $a3, 80
+    syscall
     j game_loop
 
 respond_to_A:
@@ -557,6 +598,12 @@ respond_to_A:
     add $a0, $zero, $t2
     add $a1, $zero, $t3
     jal draw_new_box                # Draw first box at new position
+    li $v0, 31
+    li $a0, 62
+    li $a1, 100
+    li $a2, 2
+    li $a3, 80
+    syscall
     j game_loop
 
 respond_to_S:
@@ -588,6 +635,12 @@ s_body:
     add $a0, $zero, $t2
     add $a1, $zero, $t3
     jal draw_new_box                # Draw first box at new position
+    li $v0, 31
+    li $a0, 60
+    li $a1, 100
+    li $a2, 2
+    li $a3, 80
+    syscall
 
     j game_loop
 
@@ -615,7 +668,12 @@ respond_to_D:
     add $a0, $zero, $t2
     add $a1, $zero, $t3
     jal draw_new_box                # Draw first box at new position
-    
+    li $v0, 31
+    li $a0, 64
+    li $a1, 100
+    li $a2, 2
+    li $a3, 80
+    syscall
     j game_loop
 
 # Collision checking functions (check_w, check_a, check_s, check_d) and other helper functions
@@ -997,6 +1055,12 @@ vertical_done:
     addi $a0, $t2, -4
     jal fall_down
     addi $t2, $t2, 4
+    li $v0, 31
+    li $a0, 70
+    li $a1, 100
+    li $a2, 24
+    li $a3, 80
+    syscall
     j collisions
 check_horizontal:
     lw $t4, 0($t2)
@@ -1134,6 +1198,12 @@ horizontal_done:
     addi $a0, $t2, 16
     jal fall_down
     addi $t2, $t2, 4
+    li $v0, 31
+    li $a0, 70
+    li $a1, 100
+    li $a2, 24
+    li $a3, 80
+    syscall
     j collisions
 update:
     addi $t2, $t2, 4
@@ -1257,8 +1327,18 @@ draw_hard31:
     j draw_hard31
 go_back:
     jr $ra
+    
 
+	
+	
+	
 exit:
+    li $v0, 31
+    li $a0, 42
+    li $a1, 100
+    li $a2, 2
+    li $a3, 100
+    syscall
     li $t2, 0
     li $t3, 4096
     addi $t1, $t0, 0
