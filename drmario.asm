@@ -26,6 +26,12 @@ ADDR_DSPL:
 # The address of the keyboard. Don't forget to connect it!
 ADDR_KBRD:
     .word 0xffff0000
+ADDR_VIRUS_BEGIN:
+    .word 0x10000000
+ADDR_VIRUS_NUM:
+    .word 0x10001100
+ADDR_G_COUNTER:
+    .word 0x10000020
 
 ####################################################
 # Mutable Data
@@ -38,17 +44,117 @@ Capsule_now:      .word 432          # Current coordinate of capsule.
 	.globl main
 
 main:
-    li $t2, 0               # i for loops
     li $t7, 0xffff00        # yellow
     li $t8, 0x00ff00        # green
     li $t9, 0x0000ff        # blue
+    li $t2, 0               # i for loops
     
     lw $t0, ADDR_DSPL       # init address
     lw $s0, ADDR_KBRD       # $s0 = base address for keyboard
-
+    
+    
+    addi $t1, $t0, 1428
+    li $t3, 6
+draw_easy:
+    beq $t2, $t3, pre_draw_mid_1
+    sw $t7, 0($t1)
+    addi $t1, $t1, 128
+    addi $t2, $t2, 1
+    j draw_easy
+pre_draw_mid_1:
+    li $t2, 0
+    addi $t1, $t0, 1468
+draw_mid_1:
+    beq $t2, $t3, pre_draw_mid_2
+    sw $t8, 0($t1)
+    addi $t1, $t1, 128
+    addi $t2, $t2, 1
+    j draw_mid_1
+pre_draw_mid_2:
+    li $t2, 0
+    addi $t1, $t0, 1476
+draw_mid_2:
+    beq $t2, $t3, pre_draw_hard1
+    sw $t8, 0($t1)
+    addi $t1, $t1, 128
+    addi $t2, $t2, 1
+    j draw_mid_2
+pre_draw_hard1:
+    li $t2, 0
+    addi $t1, $t0, 1508
+draw_hard1:
+    beq $t2, $t3, pre_draw_hard2
+    sw $t9, 0($t1)
+    addi $t1, $t1, 128
+    addi $t2, $t2, 1
+    j draw_hard1
+pre_draw_hard2:
+    li $t2, 0
+    addi $t1, $t0, 1516
+draw_hard2:
+    beq $t2, $t3, pre_draw_hard3
+    sw $t9, 0($t1)
+    addi $t1, $t1, 128
+    addi $t2, $t2, 1
+    j draw_hard2
+pre_draw_hard3:
+    li $t2, 0
+    addi $t1, $t0, 1524
+draw_hard3:
+    beq $t2, $t3, choose_loop
+    sw $t9, 0($t1)
+    addi $t1, $t1, 128
+    addi $t2, $t2, 1
+    j draw_hard3
+choose_loop:
+    li $v0, 32
+	li $a0, 1
+	syscall                         # Sleep for 1 time unit
+    lw $t4, 0($s0)
+    beq $t4, 1, choose_diff
+    b choose_loop
+choose_diff:
+    lw $a0, 4($s0)
+    beq $a0, 0x61, easy     # Check if the key a was pressed
+    beq $a0, 0x73, mid      # Check if the key s was pressed
+    beq $a0, 0x64, hard     # Check if the key d was pressed
+    b choose_loop
+easy:
+    li $t5, 2000            # init game speed(gravity will take effect 1 time per 2 sec)
+    li $t1, 0x10001000      # init curr game speed counter
+    sw $t5, 0($t1)
+    li $t4, 4               # easy feature has 4 init viruses
+    lw $t6, ADDR_VIRUS_NUM
+    sw $t4, 0($t6)
+    jal erase_choose
+    j initializer
+mid:
+    li $t5, 1200            # init game speed(gravity will take effect 1 time per 2 sec)
+    li $t1, 0x10001000      # init curr game speed counter
+    sw $t5, 0($t1)
+    li $t4, 6               # mid has 6
+    lw $t6, ADDR_VIRUS_NUM
+    sw $t4, 0($t6)
+    jal erase_choose
+    j initializer
+hard:
+    li $t5, 600             # init game speed(gravity will take effect 1 time per 2 sec)
+    li $t1, 0x10001000      # init curr game speed counter
+    sw $t5, 0($t1)
+    li $t4, 8               # hard has 8
+    lw $t6, ADDR_VIRUS_NUM
+    sw $t4, 0($t6)
+    jal erase_choose
+    j initializer
+initializer:
+    li $t2, 0
     li $t3, 3               # loop constraints
     li $t4, 0               # address to loop with, change every loops
     addi $t4, $t0, 424      # init the begin point
+    li $t1, 0x10001004      # init counter of when should the gamespeed change
+    sw $zero, 0($t1)
+    li $t1, 0x10000020      # init virus and gravity counter to 0
+    sw $zero, 0($t1)
     li $t1, 0x10000000
     sw $zero, 0($t1)
     li $t1, 0x10000004
@@ -60,6 +166,10 @@ main:
     li $t1, 0x10000010
     sw $zero, 0($t1)
     li $t1, 0x10000014
+    sw $zero, 0($t1)
+    li $t1, 0x10000018
+    sw $zero, 0($t1)
+    li $t1, 0x1000001c
     sw $zero, 0($t1)
     li $t1, 0xA9A9A9        # $t1 = grey
     
@@ -202,13 +312,7 @@ blue:
 generate_virus:
     li $t2, 0               # reset i
     li $s5, 0x10000000
-    li $v0, 42
-    li $a0, 0
-    li $a1, 7               # generate a random integer between 0 and 6(inclusive)
-    syscall                 # generate a random int
-    add $t3, $zero, $a0
-    bne $a0, 0, draw_virus
-    li $t3, 6
+    lw $t3, 0x10001100
 draw_virus:
     addi $t4, $t0, 2064     # first pixel of first row that virus can occur
     beq $t2, $t3, game_loop
@@ -216,17 +320,13 @@ draw_virus:
     li $a0, 0
     li $a1, 17              # generate a random integer between 0 and 16(inclusive)
     syscall                 # get the rand int
-    li $t5, 4
-    mult $a0, $t5           # rand int * 4 to get the horizontal index
-    mflo $t5                # store the result back to t5
+    sll $t5, $a0, 2         # rand int * 4
     add $t4, $t4, $t5       # add it to address
     li $v0, 42
     li $a0, 0
     li $a1, 12              # generate a random integer between 0 and 12(inclusive)
     syscall                 # get the rand int
-    addi $t5, $zero, 128    # li $t5, 128 doesn't work here for some reason
-    mult $a0, $t5           # rand int * 128 to get vertical index
-    mflo $t5                # store back to t5
+    sll $t5, $a0, 7         # rand int * 128
     add $t4, $t4, $t5       # add it to address
     # rand to get color of the virus
     li $v0, 42
@@ -324,9 +424,30 @@ blue_new:
 
 
 game_loop:
+    lw $t4, 0x10000020              # get current gravity counter value
+    lw $t5, 0x10001000              # get current game speed
+    lw $t6, 0x10001004              # get the counter for changing game speed
+    bne $t4, $t5, loop_body         # check affected by gravity or no6
+    lw $a2, 0x10000020              # let respond_S know it get called by gravity
+    lw $a3, 0x10001000
+    bne $t6, 5, jump_to_S           # every 5 gravity effects change the game speed
+    bne $t5, 200, change_game_speed
+    li $t6, 0
+    j jump_to_S
+change_game_speed:
+    addi $t5, $t5, -200
+    sw $t5, 0x10001000($zero)
+    li $t6, 0
+jump_to_S:
+    addi $t6, $t6, 1
+    sw $t6, 0x10001004($zero)
+    j respond_to_S
+loop_body:
 	li 		$v0, 32
 	li 		$a0, 1
 	syscall                         # Sleep for 1 time unit
+	addi $t4, $t4, 1
+	sw $t4, 0x10000020($zero)
 
     lw $t5, 0($s0)                  # Load first word from keyboard
     beq $t5, 1, keyboard_input      # If first word 1, key is pressed
@@ -439,6 +560,9 @@ respond_to_A:
     j game_loop
 
 respond_to_S:
+    bne $a2, $a3, s_body            # check if this respond is requested by the gravity
+    sw $zero, 0x10000020($zero)     # if so, clear the gravity counter
+s_body:
     lw $t5, 0x10000204              # $t5 = color of the second box
     lw $t4, 0x10000104              # $t4 = coordinate of the second box
     lw $t3, 0x10000200              # $t3 = color of the first box
@@ -861,6 +985,65 @@ erase:
 draw_new_box:
     sw $a1, 0($a0)              # Draw box with color $a1 at address $a0
     jr $ra
+    
+erase_choose:
+    addi $t1, $t0, 1428
+    li $t2, 0
+    li $t3, 6
+draw_easy1:
+    beq $t2, $t3, pre_draw_mid_11
+    sw $zero, 0($t1)
+    addi $t1, $t1, 128
+    addi $t2, $t2, 1
+    j draw_easy1
+pre_draw_mid_11:
+    li $t2, 0
+    addi $t1, $t0, 1468
+draw_mid_11:
+    beq $t2, $t3, pre_draw_mid_21
+    sw $zero, 0($t1)
+    addi $t1, $t1, 128
+    addi $t2, $t2, 1
+    j draw_mid_11
+pre_draw_mid_21:
+    li $t2, 0
+    addi $t1, $t0, 1476
+draw_mid_21:
+    beq $t2, $t3, pre_draw_hard11
+    sw $zero, 0($t1)
+    addi $t1, $t1, 128
+    addi $t2, $t2, 1
+    j draw_mid_21
+pre_draw_hard11:
+    li $t2, 0
+    addi $t1, $t0, 1508
+draw_hard11:
+    beq $t2, $t3, pre_draw_hard21
+    sw $zero, 0($t1)
+    addi $t1, $t1, 128
+    addi $t2, $t2, 1
+    j draw_hard11
+pre_draw_hard21:
+    li $t2, 0
+    addi $t1, $t0, 1516
+draw_hard21:
+    beq $t2, $t3, pre_draw_hard31
+    sw $zero, 0($t1)
+    addi $t1, $t1, 128
+    addi $t2, $t2, 1
+    j draw_hard21
+pre_draw_hard31:
+    li $t2, 0
+    addi $t1, $t0, 1524
+draw_hard31:
+    beq $t2, $t3, go_back
+    sw $zero, 0($t1)
+    addi $t1, $t1, 128
+    addi $t2, $t2, 1
+    j draw_hard31
+go_back:
+    jr $ra
+
 exit:
     li $v0, 10                  # Terminate the program gracefully
     syscall
