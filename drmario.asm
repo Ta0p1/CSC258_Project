@@ -871,6 +871,113 @@ check_vertical:
     jal erase
     addi $a0, $t2, 384
     jal erase
+    addi $t4, $t2, 128
+    addi $t5, $t2, 256
+    addi $t6, $t2, 384
+    lw $s7, 0x10000000
+    bne $s7, $t2, check_virus1
+    sw $zero, 0x10000000($zero)
+check_virus1:
+    bne $s7, $t4, check_virus2
+    sw $zero, 0x10000000($zero)
+check_virus2:
+    bne $s7, $t5, check_virus3
+    sw $zero, 0x10000000($zero)
+check_virus3:
+    bne $s7, $t6, check_virus4
+    sw $zero, 0x10000000($zero)
+check_virus4:
+    lw $s7, 0x10000004
+    bne $s7, $t2, check_virus5
+    sw $zero, 0x10000004($zero)
+check_virus5:
+    bne $s7, $t4, check_virus6
+    sw $zero, 0x10000004($zero)
+check_virus6:
+    bne $s7, $t5, check_virus7
+    sw $zero, 0x10000004($zero)
+check_virus7:
+    bne $s7, $t6, check_virus8
+    sw $zero, 0x10000004($zero)
+check_virus8:
+    lw $s7, 0x10000008
+    bne $s7, $t2, check_virus9
+    sw $zero, 0x10000008($zero)
+check_virus9:
+    bne $s7, $t4, check_virus10
+    sw $zero, 0x10000008($zero)
+check_virus10:
+    bne $s7, $t5, check_virus11
+    sw $zero, 0x10000008($zero)
+check_virus11:
+    bne $s7, $t6, check_virus12
+    sw $zero, 0x10000008($zero)
+check_virus12:
+    lw $s7, 0x1000000c
+    bne $s7, $t2, check_virus13
+    sw $zero, 0x1000000c($zero)
+check_virus13:
+    bne $s7, $t4, check_virus14
+    sw $zero, 0x1000000c($zero)
+check_virus14:
+    bne $s7, $t5, check_virus15
+    sw $zero, 0x1000000c($zero)
+check_virus15:
+    bne $s7, $t6, check_virus16
+    sw $zero, 0x1000000c($zero)
+check_virus16:
+    lw $s7, 0x10000010
+    bne $s7, $t2, check_virus17
+    sw $zero, 0x10000010($zero)
+check_virus17:
+    bne $s7, $t4, check_virus18
+    sw $zero, 0x10000010($zero)
+check_virus18:
+    bne $s7, $t5, check_virus19
+    sw $zero, 0x10000010($zero)
+check_virus19:
+    bne $s7, $t6, check_virus20
+    sw $zero, 0x10000010($zero)
+check_virus20:
+    lw $s7, 0x10000014
+    bne $s7, $t2, check_virus21
+    sw $zero, 0x10000014($zero)
+check_virus21:
+    bne $s7, $t4, check_virus22
+    sw $zero, 0x10000014($zero)
+check_virus22:
+    bne $s7, $t5, check_virus23
+    sw $zero, 0x10000014($zero)
+check_virus23:
+    bne $s7, $t6, check_virus24
+    sw $zero, 0x10000014($zero)
+check_virus24:
+    lw $s7, 0x10000018
+    bne $s7, $t2, check_virus25
+    sw $zero, 0x10000018($zero)
+check_virus25:
+    bne $s7, $t4, check_virus26
+    sw $zero, 0x10000018($zero)
+check_virus26:
+    bne $s7, $t5, check_virus27
+    sw $zero, 0x10000018($zero)
+check_virus27:
+    bne $s7, $t6, check_virus28
+    sw $zero, 0x10000018($zero)
+check_virus28:
+    lw $s7, 0x1000001c
+    bne $s7, $t2, check_virus29
+    sw $zero, 0x1000001c($zero)
+check_virus29:
+    bne $s7, $t4, check_virus30
+    sw $zero, 0x1000001c($zero)
+check_virus30:
+    bne $s7, $t5, check_virus31
+    sw $zero, 0x1000001c($zero)
+check_virus31:
+    bne $s7, $t6, vertical_done
+    sw $zero, 0x1000001c($zero)
+vertical_done:
     addi $a0, $t2, 388
     jal fall_down
     addi $a0, $t2, 260
@@ -907,6 +1014,113 @@ check_horizontal:
     jal erase
     addi $a0, $t2, 12
     jal erase
+    addi $t4, $t2, 4
+    addi $t5, $t2, 8
+    addi $t6, $t2, 12
+    lw $s7, 0x10000000
+    bne $s7, $t2, check1_virus1
+    sw $zero, 0x10000000($zero)
+check1_virus1:
+    bne $s7, $t4, check1_virus2
+    sw $zero, 0x10000000($zero)
+check1_virus2:
+    bne $s7, $t5, check1_virus3
+    sw $zero, 0x10000000($zero)
+check1_virus3:
+    bne $s7, $t6, check1_virus4
+    sw $zero, 0x10000000($zero)
+check1_virus4:
+    lw $s7, 0x10000004
+    bne $s7, $t2, check1_virus5
+    sw $zero, 0x10000004($zero)
+check1_virus5:
+    bne $s7, $t4, check1_virus6
+    sw $zero, 0x10000004($zero)
+check1_virus6:
+    bne $s7, $t5, check1_virus7
+    sw $zero, 0x10000004($zero)
+check1_virus7:
+    bne $s7, $t6, check1_virus8
+    sw $zero, 0x10000004($zero)
+check1_virus8:
+    lw $s7, 0x10000008
+    bne $s7, $t2, check1_virus9
+    sw $zero, 0x10000008($zero)
+check1_virus9:
+    bne $s7, $t4, check1_virus10
+    sw $zero, 0x10000008($zero)
+check1_virus10:
+    bne $s7, $t5, check1_virus11
+    sw $zero, 0x10000008($zero)
+check1_virus11:
+    bne $s7, $t6, check1_virus12
+    sw $zero, 0x10000008($zero)
+check1_virus12:
+    lw $s7, 0x1000000c
+    bne $s7, $t2, check1_virus13
+    sw $zero, 0x1000000c($zero)
+check1_virus13:
+    bne $s7, $t4, check_virus14
+    sw $zero, 0x1000000c($zero)
+check1_virus14:
+    bne $s7, $t5, check1_virus15
+    sw $zero, 0x1000000c($zero)
+check1_virus15:
+    bne $s7, $t6, check1_virus16
+    sw $zero, 0x1000000c($zero)
+check1_virus16:
+    lw $s7, 0x10000010
+    bne $s7, $t2, check1_virus17
+    sw $zero, 0x10000010($zero)
+check1_virus17:
+    bne $s7, $t4, check1_virus18
+    sw $zero, 0x10000010($zero)
+check1_virus18:
+    bne $s7, $t5, check1_virus19
+    sw $zero, 0x10000010($zero)
+check1_virus19:
+    bne $s7, $t6, check1_virus20
+    sw $zero, 0x10000010($zero)
+check1_virus20:
+    lw $s7, 0x10000014
+    bne $s7, $t2, check1_virus21
+    sw $zero, 0x10000014($zero)
+check1_virus21:
+    bne $s7, $t4, check1_virus22
+    sw $zero, 0x10000014($zero)
+check1_virus22:
+    bne $s7, $t5, check1_virus23
+    sw $zero, 0x10000014($zero)
+check1_virus23:
+    bne $s7, $t6, check1_virus24
+    sw $zero, 0x10000014($zero)
+check1_virus24:
+    lw $s7, 0x10000018
+    bne $s7, $t2, check1_virus25
+    sw $zero, 0x10000018($zero)
+check1_virus25:
+    bne $s7, $t4, check1_virus26
+    sw $zero, 0x10000018($zero)
+check1_virus26:
+    bne $s7, $t5, check1_virus27
+    sw $zero, 0x10000018($zero)
+check1_virus27:
+    bne $s7, $t6, check1_virus28
+    sw $zero, 0x10000018($zero)
+check1_virus28:
+    lw $s7, 0x1000001c
+    bne $s7, $t2, check1_virus29
+    sw $zero, 0x1000001c($zero)
+check1_virus29:
+    bne $s7, $t4, check1_virus30
+    sw $zero, 0x1000001c($zero)
+check1_virus30:
+    bne $s7, $t5, check1_virus31
+    sw $zero, 0x1000001c($zero)
+check1_virus31:
+    bne $s7, $t6, horizontal_done
+    sw $zero, 0x1000001c($zero)
+horizontal_done:
     addi $a0, $t2, -4
     jal fall_down
     addi $a0, $t2, -128
