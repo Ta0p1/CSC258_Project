@@ -1045,5 +1045,35 @@ go_back:
     jr $ra
 
 exit:
-    li $v0, 10                  # Terminate the program gracefully
+    li $t2, 0
+    li $t3, 4096
+    addi $t1, $t0, 0
+clear_loop:
+    beq $t2, $t3, end_view
+    sw $zero, 0($t1)
+    addi $t1, $t1, 4
+    addi $t2, $t2, 1
+    j clear_loop
+end_view:
+    addi $t4, $t0, 1428
+    li $t5, 0xff0000
+    sw $t5, 0($t4)
+    addi $t4, $t0, 1516
+    sw $t8, 0($t4)
+end_loop:
+    li $v0, 32
+	li $a0, 1
+	syscall                         # Sleep for 1 time unit
+    lw $t4, 0($s0)
+    beq $t4, 1, end_select
+    b end_loop
+end_select:
+    lw $a0, 4($s0)
+    beq $a0, 0x71, end              # end the game
+    beq $a0, 0x77, new_game         # new game
+    b end_select
+end:
+    li $v0, 10                      # Terminate the program gracefully
     syscall
+new_game:
+    j main
