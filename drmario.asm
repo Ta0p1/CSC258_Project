@@ -40,6 +40,27 @@ ADDR_POWER_UP_2:
     .word 0x100000a0
 ADDR_POWER_UP_3:
     .word 0x100000b0
+MUSIC_DATA:
+    .word 81, 100, 0, 100 
+    .word 83, 100, 0, 100
+    .word 81, 100, 0, 100 
+    .word 83, 100, 0, 100
+    .word 81, 100, 0, 100
+    .word 79, 100, 0, 100
+    .word 79, 100, 0, 100
+    .word 81, 100, 0, 100
+    .word 81, 100, 0, 100
+    .word 83, 100, 0, 100
+    .word 81, 100, 0, 100
+    .word 79, 100, 0, 100
+    .word 79, 200, 0, 100
+    .word 79, 400, 0, 0
+    
+MUSIC_LENGTH:
+    .word 14  # Number of notes
+CURRENT_NOTE: .word 0       # Index of the current note
+NOTE_TIMER:   .word 0       # Note remaining time (milliseconds)
+
 
 ####################################################
 # Mutable Data
@@ -433,6 +454,8 @@ blue_new:
 
 
 game_loop:
+    jal play_music_non_blocking     # Check music status
+    
     lw $t4, 0x10000020              # get current gravity counter value
     lw $t5, 0x10001000              # get current game speed
     lw $t6, 0x10001004              # get the counter for changing game speed
@@ -1456,9 +1479,64 @@ draw_hard31:
 go_back:
     jr $ra
     
+    
+play_music_non_blocking:
+    addi $sp, $sp, -32        # Allocate stack space
+    sw $t0, 0($sp)
+    sw $t1, 4($sp)
+    sw $t2, 8($sp)
+    sw $t3, 12($sp)
+    sw $t4, 16($sp)
+    sw $t5, 20($sp)
+    sw $s0, 24($sp)
+    sw $s1, 28($sp)
 
-	
-	
+    lw $t2, NOTE_TIMER       # The remaining time to load the current note
+    bgtz $t2, decrement_timer # If the countdown is not over, continue
+
+    lw $t3, CURRENT_NOTE     # Load the current note 
+    lw $t4, MUSIC_LENGTH     # Loaded note count
+    beq $t3, $t4, reset_music # If all notes are played, loop
+
+    la $t0, MUSIC_DATA
+    sll $t5, $t3, 4          
+    add $t0, $t0, $t5
+
+    lw $a0, 0($t0)           # MIDI 
+    lw $a1, 4($t0)           # Duration
+    lw $a2, 8($t0)           # Musical instrument
+    lw $a3, 12($t0)          # Volume
+
+    li $v0, 31               # MIDI Play
+    syscall
+
+    sw $a1, NOTE_TIMER       # Set countdown
+    addi $t3, $t3, 1         
+    sw $t3, CURRENT_NOTE
+
+    j end_music_logic
+
+decrement_timer:
+    subi $t2, $t2, 1
+    sw $t2, NOTE_TIMER
+    j end_music_logic
+
+reset_music:
+    li $t3, 0
+    sw $t3, CURRENT_NOTE
+
+end_music_logic:
+    lw $t0, 0($sp)
+    lw $t1, 4($sp)
+    lw $t2, 8($sp)
+    lw $t3, 12($sp)
+    lw $t4, 16($sp)
+    lw $t5, 20($sp)
+    lw $s0, 24($sp)
+    lw $s1, 28($sp)
+    addi $sp, $sp, 32
+    jr $ra
+
 exit:
     bne $a3, 1, normal_game_over
     li $t2, 0
