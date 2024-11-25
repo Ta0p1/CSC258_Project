@@ -1036,6 +1036,25 @@ check_virus31:
     bne $s7, $t6, vertical_done
     sw $zero, 0x1000001c($zero)
 vertical_done:
+    lw $t6, 0x10000000
+    bne $t6, $zero, not_all_eliminated
+    lw $t6, 0x10000004
+    bne $t6, $zero, not_all_eliminated
+    lw $t6, 0x10000008
+    bne $t6, $zero, not_all_eliminated
+    lw $t6, 0x1000000c
+    bne $t6, $zero, not_all_eliminated
+    lw $t6, 0x10000010
+    bne $t6, $zero, not_all_eliminated
+    lw $t6, 0x10000014
+    bne $t6, $zero, not_all_eliminated
+    lw $t6, 0x10000018
+    bne $t6, $zero, not_all_eliminated
+    lw $t6, 0x1000001c
+    bne $t6, $zero, not_all_eliminated
+    addi $a3, $zero, 1
+    j exit
+not_all_eliminated:
     addi $a0, $t2, 388
     jal fall_down
     addi $a0, $t2, 260
@@ -1185,6 +1204,25 @@ check1_virus31:
     bne $s7, $t6, horizontal_done
     sw $zero, 0x1000001c($zero)
 horizontal_done:
+    lw $t6, 0x10000000
+    bne $t6, $zero, not_all_eliminated1
+    lw $t6, 0x10000004
+    bne $t6, $zero, not_all_eliminated1
+    lw $t6, 0x10000008
+    bne $t6, $zero, not_all_eliminated1
+    lw $t6, 0x1000000c
+    bne $t6, $zero, not_all_eliminated1
+    lw $t6, 0x10000010
+    bne $t6, $zero, not_all_eliminated1
+    lw $t6, 0x10000014
+    bne $t6, $zero, not_all_eliminated1
+    lw $t6, 0x10000018
+    bne $t6, $zero, not_all_eliminated1
+    lw $t6, 0x1000001c
+    bne $t6, $zero, not_all_eliminated1
+    addi $a3, $zero, 1
+    j exit
+not_all_eliminated1:
     addi $a0, $t2, -4
     jal fall_down
     addi $a0, $t2, -128
@@ -1333,6 +1371,35 @@ go_back:
 	
 	
 exit:
+    bne $a3, 1, normal_game_over
+    li $t2, 0
+    li $t3, 4096
+    addi $t1, $t0, 0
+clear:
+    beq $t2, $t3, prepare
+    sw $zero, 0($t1)
+    addi $t1, $t1, 4
+    addi $t2, $t2, 1
+    j clear
+prepare:
+    li $t7, 0xffff00        # yellow
+    li $t8, 0x00ff00        # green
+    li $t9, 0x0000ff        # blue
+    li $t2, 0               # i for loops
+    
+    lw $t0, ADDR_DSPL       # init address
+    lw $s0, ADDR_KBRD       # $s0 = base address for keyboard
+    lw $t1, 0x10001000      # load from curr game speed counter
+    beq $t1, 200, next
+    addi $t1, $t1, -200
+next:
+    sw $t1, 0x10001000($zero)
+    lw $t6, 0x10001100
+    addi $t5, $t6, 2
+    lw $t6, ADDR_VIRUS_NUM
+    sw $t5, 0($t6)
+    j initializer
+normal_game_over:
     li $v0, 31
     li $a0, 42
     li $a1, 100
