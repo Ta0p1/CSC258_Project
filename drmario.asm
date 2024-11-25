@@ -32,6 +32,14 @@ ADDR_VIRUS_NUM:
     .word 0x10001100
 ADDR_G_COUNTER:
     .word 0x10000020
+ADDR_ROW_COMPLETE:
+    .word 0x10000080
+ADDR_POWER_UP_1:
+    .word 0x10000090
+ADDR_POWER_UP_2:
+    .word 0x100000a0
+ADDR_POWER_UP_3:
+    .word 0x100000b0
 
 ####################################################
 # Mutable Data
@@ -151,6 +159,7 @@ initializer:
     li $t3, 3               # loop constraints
     li $t4, 0               # address to loop with, change every loops
     addi $t4, $t0, 424      # init the begin point
+    sw $zero, 0x10000080($zero)
     li $t1, 0x10001004      # init counter of when should the gamespeed change
     sw $zero, 0($t1)
     li $t1, 0x10000020      # init virus and gravity counter to 0
@@ -1080,6 +1089,45 @@ not_all_eliminated:
     li $a2, 24
     li $a3, 80
     syscall
+    lw $t4, 0x10000080
+    addi $t4, $t4, 1
+    sw $t4, 0x10000080($zero)
+    bne $t4, 5, check_10
+    lw $t5, 0x10001000
+    addi $t5, $t5, 600
+    sw $t5, 0x10001000($zero)
+check_10:
+    bne $t4, 10, jump_collision
+    lw $t5, 0x10000000($zero)
+    li $t6, 0x10000000
+    bne $t5, 0, eliminate
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate
+    j jump_collision
+eliminate:
+    sw $zero, 0($t5)
+    sw $zero, 0($t6)
+    j jump_collision
+jump_collision:
     j collisions
 check_horizontal:
     lw $t4, 0($t2)
@@ -1242,6 +1290,48 @@ not_all_eliminated1:
     li $a2, 24
     li $a3, 80
     syscall
+    lw $t4, 0x10000080
+    addi $t4, $t4, 1
+    sw $t4, 0x10000080($zero)
+    lw $t4, 0x10000080
+    addi $t4, $t4, 1
+    sw $t4, 0x10000080($zero)
+    bne $t4, 5, check1_10
+    lw $t5, 0x10001000
+    addi $t5, $t5, 600
+    sw $t5, 0x10001000($zero)
+check1_10:
+    bne $t4, 10, jump_collision1
+    lw $t5, 0x10000000($zero)
+    li $t6, 0x10000000
+    bne $t5, 0, eliminate1
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate1
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate1
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate1
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate1
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate1
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate1
+    addi $t6, $t6, 4
+    lw $t5, 0($t6)
+    bne $t5, 0, eliminate1
+    j jump_collision1
+eliminate1:
+    sw $zero, 0($t5)
+    sw $zero, 0($t6)
+    j jump_collision1
+jump_collision1:
     j collisions
 update:
     addi $t2, $t2, 4
@@ -1367,7 +1457,6 @@ go_back:
     jr $ra
     
 
-	
 	
 	
 exit:
