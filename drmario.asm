@@ -41,23 +41,129 @@ ADDR_POWER_UP_2:
 ADDR_POWER_UP_3:
     .word 0x100000b0
 MUSIC_DATA:
-    .word 81, 100, 0, 100 
-    .word 83, 100, 0, 100
-    .word 81, 100, 0, 100 
-    .word 83, 100, 0, 100
-    .word 81, 100, 0, 100
-    .word 79, 100, 0, 100
-    .word 79, 100, 0, 100
-    .word 81, 100, 0, 100
-    .word 81, 100, 0, 100
-    .word 83, 100, 0, 100
-    .word 81, 100, 0, 100
-    .word 79, 100, 0, 100
-    .word 79, 200, 0, 100
-    .word 79, 400, 0, 0
+    .word 82, 10, 0, 100 #  up la
+    .word 83, 10, 0, 100 # ti
+    .word 82, 10, 0, 100 
+    .word 83, 10, 0, 100
+    .word 81, 10, 0, 100 # la
+    .word 79, 10, 0, 100 # so
+    .word 79, 10, 0, 100
+    .word 81, 10, 0, 100
+    
+    .word 82, 10, 0, 100
+    .word 83, 10, 0, 100
+    .word 81, 10, 0, 100
+    .word 79, 10, 0, 100
+    .word 79, 20, 0, 100
+    .word 79, 20, 0, 0
+    
+    .word 82, 10, 0, 100 #  up la
+    .word 83, 10, 0, 100 # ti
+    .word 82, 10, 0, 100 
+    .word 83, 10, 0, 100
+    .word 81, 10, 0, 100 # la
+    .word 79, 10, 0, 100 # so
+    .word 79, 10, 0, 100
+    .word 81, 10, 0, 100
+    
+    .word 79, 5, 0, 100
+    .word 79, 5, 0, 100
+    .word 79, 10, 0, 100
+    .word 79, 5, 0, 100
+    .word 79, 5, 0, 100
+    .word 79, 10, 0, 100
+    .word 79, 5, 0, 100
+    .word 79, 5, 0, 100
+    .word 79, 10, 0, 100
+    .word 79, 5, 0, 100
+    .word 79, 5, 0, 100
+    .word 79, 10, 0, 100
+    .word 79, 5, 0, 100
+    .word 79, 5, 0, 100
+    .word 79, 10, 0, 100
+    
+    .word 82, 10, 0, 100 #  up la
+    .word 83, 10, 0, 100 # ti
+    .word 82, 10, 0, 100 
+    .word 83, 10, 0, 100
+    .word 81, 10, 0, 100 # la
+    .word 79, 10, 0, 100 # so
+    .word 79, 10, 0, 100
+    .word 81, 10, 0, 100
+    
+    .word 82, 10, 0, 100
+    .word 83, 10, 0, 100
+    .word 81, 10, 0, 100
+    .word 79, 10, 0, 100
+    .word 79, 20, 0, 100
+    .word 79, 20, 0, 0
+    
+    .word 82, 10, 0, 100 #  up la
+    .word 83, 10, 0, 100 # ti
+    .word 82, 10, 0, 100 
+    .word 83, 10, 0, 100
+    .word 81, 10, 0, 100 # la
+    .word 79, 10, 0, 100 # so
+    .word 79, 10, 0, 100
+    .word 81, 10, 0, 100
+    
+    .word 98, 5, 0, 100 # 3 re
+    .word 92, 5, 0, 100 # up 2 so
+    .word 88, 5, 0, 100 # 2 mi
+    .word 87, 5, 0, 100 # up 2 re
+    .word 92, 5, 0, 100 # up 2 so
+    .word 87, 5, 0, 100 # up 2 re
+    .word 86, 5, 0, 100 # 2 re
+    .word 79, 5, 0, 100 # 1 so
+    .word 76, 5, 0, 100 # 1 mi
+    .word 69, 5, 0, 100 # la
+    .word 66, 5, 0, 100 # up fa
+    .word 74, 5, 0, 100 # 1 re
+    .word 75, 5, 0, 100 # up 1 re
+    .word 73, 5, 0, 100 # up 1 do
+    .word 59, 3, 0, 100 # xi
+    .word 57, 3, 0, 100 # la
+    .word 58, 3, 0, 100 # up la
+    
+    .word 79, 10, 0, 100 # 1 so
+    .word 79, 10, 0, 100 # 1 so
+    .word 79, 10, 0, 100 # 1 so
+    .word 79, 10, 0, 100 # 1 so
+    .word 77, 10, 0, 100 # 1 fa
+    .word 82, 10, 0, 100 
+    .word 82, 10, 0, 100 
+    .word 77, 10, 0, 100 # 1 fa
+    
+    .word 79, 10, 0, 100 # 1 so
+    .word 79, 10, 0, 100 # 1 so
+    .word 79, 10, 0, 100 # 1 so
+    .word 79, 10, 0, 100 # 1 so
+    .word 77, 20, 0, 100 # 1 fa
+    .word 77, 20, 0, 0 # 1 fa
+    
+    .word 79, 10, 0, 100 # 1 so
+    .word 84, 10, 0, 100 # 2 do
+    .word 83, 10, 0, 100 # 1 ti
+    .word 82, 10, 0, 100 # up 1 la
+    .word 81, 20, 0, 100 # 1 la
+    .word 77, 20, 0, 100 # 1 fa
+    
+    .word 79, 10, 0, 100 # 1 so
+    .word 79, 10, 0, 100 # 1 so
+    .word 79, 10, 0, 100 # 1 so
+    .word 79, 10, 0, 100 # 1 so
+    .word 77, 10, 0, 100 # 1 fa
+    .word 77, 10, 0, 100 # 1 fa
+    .word 77, 10, 0, 100 # 1 fa
+    .word 77, 10, 0, 100 # 1 fa
+    
+    .word 84, 20, 0, 100 # 2 do
+    .word 86, 20, 0, 100 # 2 re
+    .word 84, 20, 0, 100 # 2 do
+    .word 84, 20, 0, 0
     
 MUSIC_LENGTH:
-    .word 14  # Number of notes
+    .word 125  # Number of notes
 CURRENT_NOTE: .word 0       # Index of the current note
 NOTE_TIMER:   .word 0       # Note remaining time (milliseconds)
 
