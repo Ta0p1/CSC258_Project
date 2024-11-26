@@ -942,7 +942,19 @@ iter_through:
     addi $t2, $t2, 4
     j iter_through
 if_grey:
-    bne $t4, 0xa9a9a9, check_vertical
+    bne $t4, 0xa9a9a9, if_gold
+    addi $t2, $t2, 4
+    j iter_through
+if_gold:
+    bne $t4, 0xffd700, if_silver
+    addi $t2, $t2, 4
+    j iter_through
+if_silver:
+    bne $t4, 0xc0c0c0, if_copper
+    addi $t2, $t2, 4
+    j iter_through
+if_copper:
+    bne $t4, 0xb87333, check_vertical
     addi $t2, $t2, 4
     j iter_through
 check_vertical:
