@@ -41,126 +41,126 @@ ADDR_POWER_UP_2:
 ADDR_POWER_UP_3:
     .word 0x100000b0
 MUSIC_DATA:
-    .word 82, 10, 0, 100 #  up la
-    .word 83, 10, 0, 100 # ti
-    .word 82, 10, 0, 100 
-    .word 83, 10, 0, 100
-    .word 81, 10, 0, 100 # la
-    .word 79, 10, 0, 100 # so
-    .word 79, 10, 0, 100
-    .word 81, 10, 0, 100
-    
-    .word 82, 10, 0, 100
-    .word 83, 10, 0, 100
-    .word 81, 10, 0, 100
-    .word 79, 10, 0, 100
-    .word 79, 20, 0, 100
-    .word 79, 20, 0, 0
-    
-    .word 82, 10, 0, 100 #  up la
-    .word 83, 10, 0, 100 # ti
-    .word 82, 10, 0, 100 
-    .word 83, 10, 0, 100
-    .word 81, 10, 0, 100 # la
-    .word 79, 10, 0, 100 # so
-    .word 79, 10, 0, 100
-    .word 81, 10, 0, 100
-    
-    .word 79, 5, 0, 100
-    .word 79, 5, 0, 100
-    .word 79, 10, 0, 100
-    .word 79, 5, 0, 100
-    .word 79, 5, 0, 100
-    .word 79, 10, 0, 100
-    .word 79, 5, 0, 100
-    .word 79, 5, 0, 100
-    .word 79, 10, 0, 100
-    .word 79, 5, 0, 100
-    .word 79, 5, 0, 100
-    .word 79, 10, 0, 100
-    .word 79, 5, 0, 100
-    .word 79, 5, 0, 100
-    .word 79, 10, 0, 100
-    
-    .word 82, 10, 0, 100 #  up la
-    .word 83, 10, 0, 100 # ti
-    .word 82, 10, 0, 100 
-    .word 83, 10, 0, 100
-    .word 81, 10, 0, 100 # la
-    .word 79, 10, 0, 100 # so
-    .word 79, 10, 0, 100
-    .word 81, 10, 0, 100
-    
-    .word 82, 10, 0, 100
-    .word 83, 10, 0, 100
-    .word 81, 10, 0, 100
-    .word 79, 10, 0, 100
-    .word 79, 20, 0, 100
-    .word 79, 20, 0, 0
-    
-    .word 82, 10, 0, 100 #  up la
-    .word 83, 10, 0, 100 # ti
-    .word 82, 10, 0, 100 
-    .word 83, 10, 0, 100
-    .word 81, 10, 0, 100 # la
-    .word 79, 10, 0, 100 # so
-    .word 79, 10, 0, 100
-    .word 81, 10, 0, 100
-    
-    .word 98, 5, 0, 100 # 3 re
-    .word 92, 5, 0, 100 # up 2 so
-    .word 88, 5, 0, 100 # 2 mi
-    .word 87, 5, 0, 100 # up 2 re
-    .word 92, 5, 0, 100 # up 2 so
-    .word 87, 5, 0, 100 # up 2 re
-    .word 86, 5, 0, 100 # 2 re
-    .word 79, 5, 0, 100 # 1 so
-    .word 76, 5, 0, 100 # 1 mi
-    .word 69, 5, 0, 100 # la
-    .word 66, 5, 0, 100 # up fa
-    .word 74, 5, 0, 100 # 1 re
-    .word 75, 5, 0, 100 # up 1 re
-    .word 73, 5, 0, 100 # up 1 do
-    .word 59, 3, 0, 100 # xi
-    .word 57, 3, 0, 100 # la
-    .word 58, 3, 0, 100 # up la
-    
-    .word 79, 10, 0, 100 # 1 so
-    .word 79, 10, 0, 100 # 1 so
-    .word 79, 10, 0, 100 # 1 so
-    .word 79, 10, 0, 100 # 1 so
-    .word 77, 10, 0, 100 # 1 fa
-    .word 82, 10, 0, 100 
-    .word 82, 10, 0, 100 
-    .word 77, 10, 0, 100 # 1 fa
-    
-    .word 79, 10, 0, 100 # 1 so
-    .word 79, 10, 0, 100 # 1 so
-    .word 79, 10, 0, 100 # 1 so
-    .word 79, 10, 0, 100 # 1 so
-    .word 77, 20, 0, 100 # 1 fa
-    .word 77, 20, 0, 0 # 1 fa
-    
-    .word 79, 10, 0, 100 # 1 so
-    .word 84, 10, 0, 100 # 2 do
-    .word 83, 10, 0, 100 # 1 ti
-    .word 82, 10, 0, 100 # up 1 la
-    .word 81, 20, 0, 100 # 1 la
-    .word 77, 20, 0, 100 # 1 fa
-    
-    .word 79, 10, 0, 100 # 1 so
-    .word 79, 10, 0, 100 # 1 so
-    .word 79, 10, 0, 100 # 1 so
-    .word 79, 10, 0, 100 # 1 so
-    .word 77, 10, 0, 100 # 1 fa
-    .word 77, 10, 0, 100 # 1 fa
-    .word 77, 10, 0, 100 # 1 fa
-    .word 77, 10, 0, 100 # 1 fa
-    
-    .word 84, 20, 0, 100 # 2 do
-    .word 86, 20, 0, 100 # 2 re
-    .word 84, 20, 0, 100 # 2 do
-    .word 84, 20, 0, 0
+    .word 82, 16, 0, 100
+    .word 83, 16, 0, 100
+    .word 82, 16, 0, 100
+    .word 83, 16, 0, 100
+    .word 81, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 81, 16, 0, 100
+        
+    .word 82, 16, 0, 100
+    .word 83, 16, 0, 100
+    .word 81, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 32, 0, 100
+    .word 79, 32, 0, 0
+        
+    .word 82, 16, 0, 100
+    .word 83, 16, 0, 100
+    .word 82, 16, 0, 100
+    .word 83, 16, 0, 100
+    .word 81, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 81, 16, 0, 100
+        
+    .word 79, 8, 0, 100
+    .word 79, 8, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 8, 0, 100
+    .word 79, 8, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 8, 0, 100
+    .word 79, 8, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 8, 0, 100
+    .word 79, 8, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 8, 0, 100
+    .word 79, 8, 0, 100
+    .word 79, 16, 0, 100
+        
+    .word 82, 16, 0, 100
+    .word 83, 16, 0, 100
+    .word 82, 16, 0, 100
+    .word 83, 16, 0, 100
+    .word 81, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 81, 16, 0, 100
+        
+    .word 82, 16, 0, 100
+    .word 83, 16, 0, 100
+    .word 81, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 32, 0, 100
+    .word 79, 32, 0, 0
+        
+    .word 82, 16, 0, 100
+    .word 83, 16, 0, 100
+    .word 82, 16, 0, 100
+    .word 83, 16, 0, 100
+    .word 81, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 81, 16, 0, 100
+        
+    .word 98, 8, 0, 100
+    .word 92, 8, 0, 100
+    .word 88, 8, 0, 100
+    .word 87, 8, 0, 100
+    .word 92, 8, 0, 100
+    .word 87, 8, 0, 100
+    .word 86, 8, 0, 100
+    .word 79, 8, 0, 100
+    .word 76, 8, 0, 100
+    .word 69, 8, 0, 100
+    .word 66, 8, 0, 100
+    .word 74, 8, 0, 100
+    .word 75, 8, 0, 100
+    .word 73, 8, 0, 100
+    .word 59, 5, 0, 100
+    .word 57, 5, 0, 100
+    .word 58, 5, 0, 100
+        
+    .word 79, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 77, 16, 0, 100
+    .word 82, 16, 0, 100
+    .word 82, 16, 0, 100
+    .word 77, 16, 0, 100
+        
+    .word 79, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 77, 32, 0, 100
+    .word 77, 32, 0, 0
+        
+    .word 79, 16, 0, 100
+    .word 84, 16, 0, 100
+    .word 83, 16, 0, 100
+    .word 82, 16, 0, 100
+    .word 81, 32, 0, 100
+    .word 77, 32, 0, 100
+        
+    .word 79, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 79, 16, 0, 100
+    .word 77, 16, 0, 100
+    .word 77, 16, 0, 100
+    .word 77, 16, 0, 100
+    .word 77, 16, 0, 100
+        
+    .word 84, 32, 0, 100
+    .word 86, 32, 0, 100
+    .word 84, 32, 0, 100
+    .word 84, 32, 0, 0
     
 MUSIC_LENGTH:
     .word 125  # Number of notes
@@ -308,7 +308,7 @@ back_to_main:
     sw $t8, 400($t1)
     j main
 easy:
-    li $t5, 2000            # init game speed(gravity will take effect 1 time per 2 sec)
+    li $t5, 200            # init game speed(gravity will take effect 1 time per 2 sec)
     li $t1, 0x10001000      # init curr game speed counter
     sw $t5, 0($t1)
     li $t4, 4               # easy feature has 4 init viruses
@@ -317,7 +317,7 @@ easy:
     jal erase_choose
     j initializer
 mid:
-    li $t5, 1200            # init game speed(gravity will take effect 1 time per 2 sec)
+    li $t5, 120            # init game speed(gravity will take effect 1 time per 2 sec)
     li $t1, 0x10001000      # init curr game speed counter
     sw $t5, 0($t1)
     li $t4, 6               # mid has 6
@@ -326,7 +326,7 @@ mid:
     jal erase_choose
     j initializer
 hard:
-    li $t5, 600             # init game speed(gravity will take effect 1 time per 2 sec)
+    li $t5, 60             # init game speed(gravity will take effect 1 time per 2 sec)
     li $t1, 0x10001000      # init curr game speed counter
     sw $t5, 0($t1)
     li $t4, 8               # hard has 8
@@ -622,11 +622,11 @@ game_loop:
     lw $a2, 0x10000020              # let respond_S know it get called by gravity
     lw $a3, 0x10001000
     bne $t6, 5, jump_to_S           # every 5 gravity effects change the game speed
-    bne $t5, 200, change_game_speed
+    bne $t5, 20, change_game_speed
     li $t6, 0
     j jump_to_S
 change_game_speed:
-    addi $t5, $t5, -200
+    addi $t5, $t5, -20
     sw $t5, 0x10001000($zero)
     li $t6, 0
 jump_to_S:
@@ -1291,7 +1291,7 @@ not_all_eliminated:
     sw $t4, 0x10000080($zero)
     bne $t4, 5, check_10
     lw $t5, 0x10001000
-    addi $t5, $t5, 600
+    addi $t5, $t5, 60
     sw $t5, 0x10001000($zero)
 check_10:
     bne $t4, 10, jump_collision
@@ -1749,7 +1749,7 @@ add_one_point:
 exchange:
     sw $s7, HIGHEST_SCORE
 draw_s:
-    # 绘制分数
+    # Draw corresponding scores
     jal draw_score         # Call the draw fraction function
     lw $s7, 0($sp)
     lw $s0, 4($sp)
@@ -1796,7 +1796,7 @@ draw_score:
 
     
 draw_hundred_loop:
-
+    # Draw gold blocks (100 score)
     li $t4, 100             # Each gold block represents 100 points
     li $t9, 0xFFD700        # Gold
     blt $t2, $t4, draw_tens # If the score is less than 100, skip the golde block
@@ -1812,7 +1812,7 @@ draw_hundred_continue:
 
     
 draw_tens:
-# 绘制红色块（10分）
+    # Draw silver blocks (10 score)
     li $t4, 10              # Each silver block represents 10 points
     li $t9, 0xC0C0C0        # Silver
     blt $t2, $t4, draw_units # If the score is less than 10, skip the silver block
@@ -1828,7 +1828,7 @@ draw_tens_continue:
 
     
 draw_units:
-# 绘制黄色块（1分）
+    # Draw bronze blocks (1 score)
     li $t4, 1              
     li $t9, 0xB87333        
     beqz $t2, draw_score_end 
@@ -1878,7 +1878,7 @@ draw_score1:
 
     
 draw_hundred_loop1:
-
+    # Draw gold blocks (100 score)
     li $t4, 100             # Each gold block represents 100 points
     li $t9, 0xFFD700        # Gold
     blt $t2, $t4, draw_tens1 # If the score is less than 100, skip the golde block
@@ -1894,7 +1894,7 @@ draw_hundred_continue1:
 
     
 draw_tens1:
-# 绘制红色块（10分）
+    # Draw silver blocks (10 score)
     li $t4, 10              # Each silver block represents 10 points
     li $t9, 0xC0C0C0        # Silver
     blt $t2, $t4, draw_units1 # If the score is less than 10, skip the silver block
@@ -1910,7 +1910,7 @@ draw_tens_continue1:
 
     
 draw_units1:
-# 绘制黄色块（1分）
+    # Draw bronze blocks (1 score)
     li $t4, 1              
     li $t9, 0xB87333        
     beqz $t2, draw_score_end1 
@@ -1948,8 +1948,8 @@ prepare:
     lw $t0, ADDR_DSPL       # init address
     lw $s0, ADDR_KBRD       # $s0 = base address for keyboard
     lw $t1, 0x10001000      # load from curr game speed counter
-    beq $t1, 200, next
-    addi $t1, $t1, -200
+    beq $t1, 20, next
+    addi $t1, $t1, -20
 next:
     sw $t1, 0x10001000($zero)
     lw $t6, 0x10001100
