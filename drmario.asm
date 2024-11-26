@@ -61,11 +61,12 @@ MUSIC_LENGTH:
 CURRENT_NOTE: .word 0       # Index of the current note
 NOTE_TIMER:   .word 0       # Note remaining time (milliseconds)
 
-SCORE: .word 0   # The initial score is 0
 ####################################################
 # Mutable Data
 ##############################################################################
 Capsule_now:      .word 432          # Current coordinate of capsule.
+SCORE: .word 0   # The initial score is 0
+HIGHEST_SCORE:  .word 0
 ##############################################################################
 # Code
 ##############################################################################
@@ -130,11 +131,22 @@ pre_draw_hard3:
     li $t2, 0
     addi $t1, $t0, 1524
 draw_hard3:
-    beq $t2, $t3, choose_loop
+    beq $t2, $t3, pre_draw_score
     sw $t9, 0($t1)
     addi $t1, $t1, 128
     addi $t2, $t2, 1
     j draw_hard3
+pre_draw_score:
+    li $t2, 0
+    li $t3, 7
+    addi $t1, $t0, 564
+    li $t4, 0xffd700
+draw_score_menu:
+    beq $t2, $t3, choose_loop
+    sw $t4, 0($t1)
+    addi $t1, $t1, 4
+    addi $t2, $t2, 1
+    j draw_score_menu
 choose_loop:
     li $v0, 32
 	li $a0, 1
@@ -147,7 +159,48 @@ choose_diff:
     beq $a0, 0x61, easy     # Check if the key a was pressed
     beq $a0, 0x73, mid      # Check if the key s was pressed
     beq $a0, 0x64, hard     # Check if the key d was pressed
+    beq $a0, 0x65, show_menu
     b choose_loop
+show_menu:
+    jal erase_choose
+    jal draw_score1
+menu_loop:
+    li $v0, 32
+	li $a0, 1
+	syscall
+	lw $t4, 0($s0)
+    beq $t4, 1, back_menu
+    j menu_loop
+back_menu:
+    lw $a0, 4($s0)
+    beq $a0, 0x65, back_to_main
+    j menu_loop
+back_to_main:
+    lw $t0, ADDR_DSPL
+    li $t8, 0x000000
+    addi $t1, $t0, 2144     # The starting address of the score display area (selection does not affect other display areas)
+    
+    sw $t8, 0($t1)          # Reset the display score area
+    sw $t8, 4($t1)
+    sw $t8, 8($t1)
+    sw $t8, 12($t1)
+    sw $t8, 16($t1)
+    sw $t8, 128($t1)
+    sw $t8, 132($t1)
+    sw $t8, 136($t1)
+    sw $t8, 140($t1)
+    sw $t8, 144($t1)
+    sw $t8, 256($t1)
+    sw $t8, 260($t1)
+    sw $t8, 264($t1)
+    sw $t8, 268($t1)
+    sw $t8, 272($t1)
+    sw $t8, 384($t1)
+    sw $t8, 388($t1)
+    sw $t8, 392($t1)
+    sw $t8, 396($t1)
+    sw $t8, 400($t1)
+    j main
 easy:
     li $t5, 2000            # init game speed(gravity will take effect 1 time per 2 sec)
     li $t1, 0x10001000      # init curr game speed counter
@@ -1489,14 +1542,24 @@ pre_draw_hard31:
     li $t2, 0
     addi $t1, $t0, 1524
 draw_hard31:
-    beq $t2, $t3, go_back
+    beq $t2, $t3, pre_draw_score1
     sw $zero, 0($t1)
     addi $t1, $t1, 128
     addi $t2, $t2, 1
     j draw_hard31
+pre_draw_score1:
+    li $t2, 0
+    li $t3, 7
+    addi $t1, $t0, 564
+draw_score_menu1:
+    beq $t2, $t3, go_back
+    sw $zero, 0($t1)
+    addi $t1, $t1, 4
+    addi $t2, $t2, 1
+    j draw_score_menu1
 go_back:
     jr $ra
-    
+
     
 play_music_non_blocking:
     addi $sp, $sp, -32        # Allocate stack space
@@ -1574,7 +1637,12 @@ add_one_point:
     lw $s7, SCORE          # Read current score
     addi $s7, $s7, 1       # Score plus one
     sw $s7, SCORE          # Save new score
-
+    lw $t5, HIGHEST_SCORE
+    blt $t5, $s7, exchange
+    j draw_s
+exchange:
+    sw $s7, HIGHEST_SCORE
+draw_s:
     # 绘制分数
     jal draw_score         # Call the draw fraction function
     lw $s7, 0($sp)
@@ -1671,6 +1739,88 @@ draw_units_continue:
 draw_score_end:
     jr $ra
     
+    
+draw_score1:
+    
+    lw $t0, ADDR_DSPL
+    li $t8, 0x000000
+    addi $t1, $t0, 2144     # The starting address of the score display area (selection does not affect other display areas)
+    
+    sw $t8, 0($t1)          # Reset the display score area
+    sw $t8, 4($t1)
+    sw $t8, 8($t1)
+    sw $t8, 12($t1)
+    sw $t8, 16($t1)
+    sw $t8, 128($t1)
+    sw $t8, 132($t1)
+    sw $t8, 136($t1)
+    sw $t8, 140($t1)
+    sw $t8, 144($t1)
+    sw $t8, 256($t1)
+    sw $t8, 260($t1)
+    sw $t8, 264($t1)
+    sw $t8, 268($t1)
+    sw $t8, 272($t1)
+    sw $t8, 384($t1)
+    sw $t8, 388($t1)
+    sw $t8, 392($t1)
+    sw $t8, 396($t1)
+    sw $t8, 400($t1)
+
+    lw $t2, HIGHEST_SCORE           # Read current score
+    li $t3, 0               # Initialize the counter (number of blocks currently drawn)
+
+    
+draw_hundred_loop1:
+
+    li $t4, 100             # Each gold block represents 100 points
+    li $t9, 0xFFD700        # Gold
+    blt $t2, $t4, draw_tens1 # If the score is less than 100, skip the golde block
+    sw $t9, 0($t1)          # draw
+    addi $t1, $t1, 4        # Move to the next position
+    addi $t3, $t3, 1        # Update the number of blocks drawn
+    sub $t2, $t2, $t4       # Subtract 100 from the score already counted
+    bne $t3, 5, draw_hundred_continue1 # If there are less than 5 blocks in a row, continue drawing
+    addi $t1, $t1, 108      # Move to next line
+    li $t3, 0               # Reset the number of mapped blocks in a row
+draw_hundred_continue1:
+    j draw_hundred_loop1
+
+    
+draw_tens1:
+# 绘制红色块（10分）
+    li $t4, 10              # Each silver block represents 10 points
+    li $t9, 0xC0C0C0        # Silver
+    blt $t2, $t4, draw_units1 # If the score is less than 10, skip the silver block
+    sw $t9, 0($t1)          # omit...
+    addi $t1, $t1, 4        # Similar to gold
+    addi $t3, $t3, 1       
+    sub $t2, $t2, $t4     
+    bne $t3, 5, draw_tens_continue1
+    addi $t1, $t1, 108      
+    li $t3, 0               
+draw_tens_continue1:
+    j draw_tens1
+
+    
+draw_units1:
+# 绘制黄色块（1分）
+    li $t4, 1              
+    li $t9, 0xB87333        
+    beqz $t2, draw_score_end1 
+    sw $t9, 0($t1)      
+    addi $t1, $t1, 4       
+    addi $t3, $t3, 1       
+    sub $t2, $t2, $t4      
+    bne $t3, 5, draw_units_continue1 
+    addi $t1, $t1, 108      
+    li $t3, 0            
+draw_units_continue1:
+    j draw_units1
+
+draw_score_end1:
+    jr $ra
+    
 
 exit:
     bne $a3, 1, normal_game_over
@@ -1700,6 +1850,7 @@ next:
     addi $t5, $t6, 2
     lw $t6, ADDR_VIRUS_NUM
     sw $t5, 0($t6)
+    sw $zero, SCORE
     j initializer
 normal_game_over:
     li $v0, 31
@@ -1739,4 +1890,5 @@ end:
     li $v0, 10                      # Terminate the program gracefully
     syscall
 new_game:
+    sw $zero, SCORE
     j main
