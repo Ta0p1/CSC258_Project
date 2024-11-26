@@ -61,7 +61,7 @@ MUSIC_LENGTH:
 CURRENT_NOTE: .word 0       # Index of the current note
 NOTE_TIMER:   .word 0       # Note remaining time (milliseconds)
 
-
+SCORE: .word 0   # The initial score is 0
 ####################################################
 # Mutable Data
 ##############################################################################
@@ -973,6 +973,9 @@ check_vertical:
     jal erase
     addi $a0, $t2, 384
     jal erase
+    
+    jal add_one_point
+    
     addi $t4, $t2, 128
     addi $t5, $t2, 256
     addi $t6, $t2, 384
@@ -1180,6 +1183,9 @@ check_horizontal:
     jal erase
     addi $a0, $t2, 12
     jal erase
+    
+    jal add_one_point
+    
     addi $t4, $t2, 4
     addi $t5, $t2, 8
     addi $t6, $t2, 12
@@ -1548,6 +1554,123 @@ end_music_logic:
     lw $s1, 28($sp)
     addi $sp, $sp, 32
     jr $ra
+
+
+j exit
+add_one_point:
+     # Update score
+    addi $sp, $sp, -44
+    sw $s7, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+    sw $t0, 12($sp)
+    sw $t1, 16($sp)
+    sw $t2, 20($sp)
+    sw $t3, 24($sp)
+    sw $t4, 28($sp)
+    sw $t9, 32($sp)
+    sw $ra, 36($sp)
+    sw $t8, 40($sp)
+    lw $s7, SCORE          # Read current score
+    addi $s7, $s7, 1       # Score plus one
+    sw $s7, SCORE          # Save new score
+
+    # 绘制分数
+    jal draw_score         # Call the draw fraction function
+    lw $s7, 0($sp)
+    lw $s0, 4($sp)
+    lw $s1, 8($sp)
+    lw $t0, 12($sp)
+    lw $t1, 16($sp)
+    lw $t2, 20($sp)
+    lw $t3, 24($sp)
+    lw $t4, 28($sp)
+    lw $t9, 32($sp)
+    lw $ra, 36($sp)
+    lw $t8, 40($sp)
+    addi $sp, $sp, 44
+    jr $ra
+draw_score:
+    
+    lw $t0, ADDR_DSPL
+    li $t8, 0x000000
+    addi $t1, $t0, 2144     # The starting address of the score display area (selection does not affect other display areas)
+    
+    sw $t8, 0($t1)          # Reset the display score area
+    sw $t8, 4($t1)
+    sw $t8, 8($t1)
+    sw $t8, 12($t1)
+    sw $t8, 16($t1)
+    sw $t8, 128($t1)
+    sw $t8, 132($t1)
+    sw $t8, 136($t1)
+    sw $t8, 140($t1)
+    sw $t8, 144($t1)
+    sw $t8, 256($t1)
+    sw $t8, 260($t1)
+    sw $t8, 264($t1)
+    sw $t8, 268($t1)
+    sw $t8, 272($t1)
+    sw $t8, 384($t1)
+    sw $t8, 388($t1)
+    sw $t8, 392($t1)
+    sw $t8, 396($t1)
+    sw $t8, 400($t1)
+
+    lw $t2, SCORE           # Read current score
+    li $t3, 0               # Initialize the counter (number of blocks currently drawn)
+
+    
+draw_hundred_loop:
+
+    li $t4, 100             # Each gold block represents 100 points
+    li $t9, 0xFFD700        # Gold
+    blt $t2, $t4, draw_tens # If the score is less than 100, skip the golde block
+    sw $t9, 0($t1)          # draw
+    addi $t1, $t1, 4        # Move to the next position
+    addi $t3, $t3, 1        # Update the number of blocks drawn
+    sub $t2, $t2, $t4       # Subtract 100 from the score already counted
+    bne $t3, 5, draw_hundred_continue # If there are less than 5 blocks in a row, continue drawing
+    addi $t1, $t1, 108      # Move to next line
+    li $t3, 0               # Reset the number of mapped blocks in a row
+draw_hundred_continue:
+    j draw_hundred_loop
+
+    
+draw_tens:
+# 绘制红色块（10分）
+    li $t4, 10              # Each silver block represents 10 points
+    li $t9, 0xC0C0C0        # Silver
+    blt $t2, $t4, draw_units # If the score is less than 10, skip the silver block
+    sw $t9, 0($t1)          # omit...
+    addi $t1, $t1, 4        # Similar to gold
+    addi $t3, $t3, 1       
+    sub $t2, $t2, $t4     
+    bne $t3, 5, draw_tens_continue 
+    addi $t1, $t1, 108      
+    li $t3, 0               
+draw_tens_continue:
+    j draw_tens
+
+    
+draw_units:
+# 绘制黄色块（1分）
+    li $t4, 1              
+    li $t9, 0xB87333        
+    beqz $t2, draw_score_end 
+    sw $t9, 0($t1)      
+    addi $t1, $t1, 4       
+    addi $t3, $t3, 1       
+    sub $t2, $t2, $t4      
+    bne $t3, 5, draw_units_continue 
+    addi $t1, $t1, 108      
+    li $t3, 0            
+draw_units_continue:
+    j draw_units
+
+draw_score_end:
+    jr $ra
+    
 
 exit:
     bne $a3, 1, normal_game_over
